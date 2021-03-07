@@ -1,17 +1,43 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>Todo-application</h1>
+    <TodoForm v-on:create-todo="createTodo"/>
+    <hr>
+    <TodoList v-bind:todos="todos" v-on:remove-todo="removeTodo"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import TodoList from '@/components/TodoList';
+import TodoForm from '@/components/TodoForm';
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    TodoList, TodoForm
+  },
+  data() {
+      return {
+          todos: [],
+      }
+  },
+  methods: {
+    removeTodo(id) {
+      this.todos = this.todos.filter(todo => todo.id !== id)
+    },
+    createTodo(data) {
+      let newTodo = {
+        id: Date.now(),
+        title: data,
+        completed: false
+      }
+
+      this.todos.push(newTodo);
+    }
+  },
+  mounted() {
+    fetch('https://jsonplaceholder.typicode.com/todos?_limit=3')
+    .then(response => response.json())
+    .then(json => this.todos = json)
   }
 }
 </script>
